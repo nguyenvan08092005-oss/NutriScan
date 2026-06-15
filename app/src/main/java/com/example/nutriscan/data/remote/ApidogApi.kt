@@ -4,7 +4,7 @@ import com.example.nutriscan.data.remote.dto.FoodResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface OpenFoodFactsApi {
+interface FoodApiService {
 
     @GET("searchFood")
     suspend fun searchFood(

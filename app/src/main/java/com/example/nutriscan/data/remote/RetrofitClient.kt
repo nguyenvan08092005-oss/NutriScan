@@ -7,11 +7,11 @@ object RetrofitClient {
 
     private const val BASE_URL = "https://mock.apidog.com/m1/1290376-1289246-default/"
 
-    val api: OpenFoodFactsApi by lazy {
+    val api: FoodApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(OpenFoodFactsApi::class.java)
+            .create(FoodApiService::class.java)
     }
 }
