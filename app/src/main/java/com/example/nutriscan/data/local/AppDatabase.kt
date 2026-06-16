@@ -14,7 +14,7 @@ import com.example.nutriscan.data.local.entity.UserEntity
         UserEntity::class,
         FoodDiaryEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

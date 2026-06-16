@@ -1,5 +1,8 @@
 package com.example.nutriscan.ui.screens
-
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,7 +65,7 @@ fun HomeScreen(
     viewModel: NutriViewModel
 ) {
     var searchQuery by remember { mutableStateOf("") }
-
+    val context = LocalContext.current
     var selectedProduct by remember { mutableStateOf<ProductDto?>(null) }
     var gramInput by remember { mutableStateOf("100") }
     var gramErrorMessage by remember { mutableStateOf("") }
@@ -214,8 +218,21 @@ fun HomeScreen(
                     textSecondary = appColors.textSecondary,
                     borderColor = appColors.border,
                     onQueryChange = { query ->
+
                         searchQuery = query
-                        viewModel.searchFoodFromApi(query)
+
+                        if (isInternetAvailable(context)) {
+
+                            viewModel.searchFoodFromApi(query)
+
+                        } else {
+
+                            Toast.makeText(
+                                context,
+                                "Không có kết nối Internet",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 )
             }
@@ -498,4 +515,25 @@ private fun selectedDateToMillis(date: String): Long? {
     } catch (e: Exception) {
         null
     }
+}
+private fun isInternetAvailable(
+    context: Context
+): Boolean {
+
+    val connectivityManager =
+        context.getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+
+    val network =
+        connectivityManager.activeNetwork
+            ?: return false
+
+    val capabilities =
+        connectivityManager.getNetworkCapabilities(network)
+            ?: return false
+
+    return capabilities.hasCapability(
+        NetworkCapabilities.NET_CAPABILITY_INTERNET
+    )
 }

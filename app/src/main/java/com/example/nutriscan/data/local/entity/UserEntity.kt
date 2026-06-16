@@ -10,5 +10,6 @@ data class UserEntity(
     val name: String,
     val weight: Double,
     val height: Double,
-    val age: Int
+    val age: Int,
+    val isDarkMode: Boolean = false
 )

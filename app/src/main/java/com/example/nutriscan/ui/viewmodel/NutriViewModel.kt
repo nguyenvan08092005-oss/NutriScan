@@ -82,6 +82,10 @@ class NutriViewModel(
 
     fun toggleDarkMode() {
         isDarkMode.value = !isDarkMode.value
+        viewModelScope.launch {
+            val user = userDao.getUser() ?: UserEntity(name = "", weight = 0.0, height = 0.0, age = 0)
+            userDao.insertOrUpdateUser(user.copy(isDarkMode = isDarkMode.value))
+        }
     }
 
     private fun String.removeAccents(): String {
@@ -165,14 +169,20 @@ class NutriViewModel(
         viewModelScope.launch {
             val user = userDao.getUser()
 
-            if (user != null && user.weight > 0.0 && user.height > 0.0) {
-                currentUser.value = user
+            if (user != null) {
+                isDarkMode.value = user.isDarkMode
+                
+                if (user.weight > 0.0 && user.height > 0.0) {
+                    currentUser.value = user
 
-                calculateBMI(
-                    weight = user.weight,
-                    height = user.height,
-                    saveToRoom = false
-                )
+                    calculateBMI(
+                        weight = user.weight,
+                        height = user.height,
+                        saveToRoom = false
+                    )
+                } else {
+                    resetToDefaultProfile()
+                }
             } else {
                 resetToDefaultProfile()
             }
@@ -201,7 +211,8 @@ class NutriViewModel(
                 name = name,
                 weight = weight,
                 height = height,
-                age = age
+                age = age,
+                isDarkMode = isDarkMode.value
             )
 
             userDao.insertOrUpdateUser(user)
@@ -222,7 +233,8 @@ class NutriViewModel(
                 name = "",
                 weight = 0.0,
                 height = 0.0,
-                age = 0
+                age = 0,
+                isDarkMode = isDarkMode.value
             )
 
             userDao.insertOrUpdateUser(emptyUser)
@@ -270,7 +282,8 @@ class NutriViewModel(
                         name = currentUser.value?.name ?: "User",
                         weight = weight,
                         height = height,
-                        age = currentUser.value?.age ?: 20
+                        age = currentUser.value?.age ?: 20,
+                        isDarkMode = isDarkMode.value
                     )
 
                     userDao.insertOrUpdateUser(user)
